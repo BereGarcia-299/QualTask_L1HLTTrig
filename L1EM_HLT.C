@@ -31,13 +31,54 @@ float delta_phi(float phi_uno,float phi_dos){
 
 }
 
+//----LogBins Function
+void log_bins(const float x_low, const float x_high, const int num_bins, double *bins){
+
+  int const size = num_bins+1;
+  float logbins[56] = {};
+  
+  *(bins+0)= x_low;
+  *(bins+ num_bins) = x_high;
+
+
+  logbins[0] = TMath::Log10(x_low);
+  logbins[num_bins] = TMath::Log10(x_high);
+  
+
+  float interval = (logbins[55] - logbins[0])/num_bins;
+
+  for(int index = 1; index < num_bins; index++){
+    logbins[index] = logbins[0] + index*interval;
+    *(bins +index) = TMath::Power(10, logbins[index]);
+    cout << "This went into  your bins_new array " << *(bins+index) << endl;
+  }
+
+  return;
+}
+
+
+
 
 
 int L1EM_HLT(){
   
+
+
+double bins_new[55]={};
+
+double *ptr = bins_new; 
+
+log_bins(1,40,55,ptr);
+
+for (int i = 0; i < 55; i++)
+{
+  cout << "Array index number " << i << " saved this number: " << bins_new[i] << endl;
+}
+
+
   //-------Histograms----------//                                                                                                                                                
-  TH1D *all_photons_barrel = new TH1D("all_photons_barrel","",40,0,200);               //----pT Distribution w/ L1 Trigger                                                         
-  TH1D *all_photons_endcaps = new TH1D("all_photons_endcaps","",40,0,200);
+  TH1D *all_photons_barrel = new TH1D("all_photons_barrel","",55,bins_new);               //----pT Distribution w/ L1 Trigger                                                         
+  TH1D *all_photons_endcaps = new TH1D("all_photons_endcaps","",55,bins_new);
   TH1D *all_photons= new TH1D("all_photons","",40,0,200);
 
 
@@ -45,18 +86,33 @@ int L1EM_HLT(){
   TH1D *all_photons_phi = new TH1D("all_photons_phi","",20,-4,4);
   TH1D *all_photons_sumET = new TH1D("all_photons_sumET","",45,-0.5,5);
 
-  TH1D *photons_wL1EM_15GeV = new TH1D("photons_wL1EM_15GeV","",40,0,200);          //----pT Distribution W/ Matched L1 Trigger
-  TH1D *photons_wL1EM_15GeV_barrel = new TH1D("photons_wL1EM_15GeV_barrel","",40,0,200);
-  TH1D *photons_wL1EM_15GeV_endcaps = new TH1D("photons_wL1EM_15GeV_endcaps","",40,0,200);
+  //----Photons That Fired L1 Triggers w/ pT > 10 GeV
+  TH1D *barrel_wL1EM_10GeV_SumET_dis_50 = new TH1D("barrel_wL1EM_10GeV_SumET_dis_50","",65,-100,5000);
+  TH1D *barrel_wL1EM_10GeV_SumET_dis_10 = new TH1D("barrel_wL1EM_10GeV_SumET_dis_10","", 65,-100,5000);
+  
+  TH1D *endcaps_wL1EM_10GeV_SumET_dis_50 = new TH1D("endcaps_wL1EM_10GeV_SumET_dis_50","",65,-100,5000);
+  TH1D *endcaps_wL1EM_10GeV_SumET_dis_10 = new TH1D("endcaps_wL1EM_10GeV_SumET_dis_10","",65,-100,5000);
+  
 
-  TH1D *photons_wL1EM_25GeV = new TH1D("photons_wL1EM_25GeV","",40,0,200);
-  TH1D *photons_wL1EM_25GeV_barrel = new TH1D("photons_wL1EM_25GeV_barrel","",40,0,200);
-  TH1D *photons_wL1EM_25GeV_endcaps = new TH1D("photons_wL1EM_25GeV_endcaps","",40,0,200);
+  TH1D *photons_wL1EM_10GeV = new TH1D("photons_wL1EM_15GeV","",25,0,40);          
+  TH1D *photons_wL1EM_10GeV_barrel = new TH1D("photons_wL1EM_10GeV_barrel","",55,bins_new);
+  TH1D *photons_wL1EM_10GeV_endcaps = new TH1D("photons_wL1EM_10GeV_endcaps","",55,bins_new);
 
 
-  TH1D *photons_wL1EM_35GeV = new TH1D("photons_wL1EM_35GeV","",40,0,200);
-  TH1D *photons_wL1EM_35GeV_barrel = new TH1D("photons_wL1EM_35GeV_barrel","",40,0,200);
-  TH1D *photons_wL1EM_35GeV_endcaps = new TH1D("photons_wL1EM_15GeV_endcaps","",40,0,200);
+  //----Photons That Fired L1 Triggers w/ pT > 15 GeV
+  TH1D *photons_wL1EM_15GeV = new TH1D("photons_wL1EM_15GeV","",40,0,200);          
+  TH1D *photons_wL1EM_15GeV_barrel = new TH1D("photons_wL1EM_15GeV_barrel","",55,bins_new);
+  TH1D *photons_wL1EM_15GeV_endcaps = new TH1D("photons_wL1EM_15GeV_endcaps","",55,bins_new);
+
+  //----Photons That Fired L1 Triggers w/ pT > 25 GeV
+  TH1D *photons_wL1EM_25GeV = new TH1D("photons_wL1EM_25GeV","",40,0,200);          
+  TH1D *photons_wL1EM_25GeV_barrel = new TH1D("photons_wL1EM_25GeV_barrel","",55,bins_new);
+  TH1D *photons_wL1EM_25GeV_endcaps = new TH1D("photons_wL1EM_25GeV_endcaps","",55,bins_new);
+
+  //----Photons That Fired L1 Triggers w/ pT > 35 GeV
+  TH1D *photons_wL1EM_35GeV = new TH1D("photons_wL1EM_35GeV","",40,0,200);          
+  TH1D *photons_wL1EM_35GeV_barrel = new TH1D("photons_wL1EM_35GeV_barrel","",55,bins_new);
+  TH1D *photons_wL1EM_35GeV_endcaps = new TH1D("photons_wL1EM_35GeV_endcaps","",55,bins_new);
 
 
   TH1D *photons_wL1EM_eta_15GeV = new TH1D("photons_wL1EM_eta_15GeV","",20,-4,4);  
@@ -69,7 +125,7 @@ int L1EM_HLT(){
   TH1D *photons_wL1EM_phi_35GeV = new TH1D("photons_wL1EM_phi_35GeV","",20,-4,4);
 
   //----Photons That Fired HLT Triggers > 15 GeV
-  TH1D *photons_w_HLT_15_barrel = new TH1D("photons_w_HLT_15_barrel","", 40, 0, 200);
+  TH1D *photons_w_HLT_15_barrel = new TH1D("photons_w_HLT_15_barrel","", 40, 0, 200);         
   TH1D *photons_w_HLT_15_endcaps = new TH1D("photons_w_HLT_15_endcaps","", 40,0,200);
   TH1D *photons_w_HLT_15 = new TH1D("photons_w_HLT_15","",40,0,200);
 
@@ -157,47 +213,56 @@ int L1EM_HLT(){
   //--------------------------------------------------------//
   //**********************************L1 Histograms**********************************// 
   //----Barrel & EndCaps
-  TH1D *all_photons_010 = new TH1D("all_photons_010","", 40,0,200); 
+  TH1D *all_photons_010 = new TH1D("all_photons_010","", 25,0,40);                   //-----Changed the number of bins from 40 ---> 50 
   TH1D *all_photons_1030 = new TH1D("all_photons_1030","",40,0,200);
   TH1D *all_photons_3050 = new TH1D("all_photons_3050","",40,0,200);
   TH1D *all_photons_5080 = new TH1D("all_photons_5080","",40,0,200);
 
 
+  TH1D *photon_w_L1EM_10GeV_010 = new TH1D("photon_w_L1EM_10GeV_010","",25,0,40);    //-----Changed the number of bins from 40 ---> 50
+  TH1D *photon_w_L1EM_10GeV_1030 = new TH1D("photon_w_L1EM_10GeV_1030","",40,0,200);
+  TH1D *photon_w_L1EM_10GeV_3050 = new TH1D("photon_w_L1EM_10GeV_3050","",40,0,200);
+  TH1D *photon_w_L1EM_10GeV_5080 = new TH1D("photon_w_L1EM_10GeV_5080","",40,0,200);
 
-  TH1D *photon_w_L1EM_15GeV_010 = new TH1D("photon_w_L1EM_15GeV_010","",40,0,200);
+
+  TH1D *photon_w_L1EM_15GeV_010 = new TH1D("photon_w_L1EM_15GeV_010","",25,0,40);    //-----Changed the number of bins from 40 ---> 50
   TH1D *photon_w_L1EM_15GeV_1030 = new TH1D("photon_w_L1EM_15GeV_1030","",40,0,200);
   TH1D *photon_w_L1EM_15GeV_3050 = new TH1D("photon_w_L1EM_15GeV_3050","",40,0,200);
   TH1D *photon_w_L1EM_15GeV_5080 = new TH1D("photon_w_L1EM_15GeV_5080","",40,0,200);
 
 
-  TH1D *photon_w_L1EM_25GeV_010 = new TH1D("photon_w_L1EM_25GeV_010","",40,0,200);
+  TH1D *photon_w_L1EM_25GeV_010 = new TH1D("photon_w_L1EM_25GeV_010","",25,0,40);    //-----Changed the number of bins from 40 ---> 50
   TH1D *photon_w_L1EM_25GeV_1030 = new TH1D("photon_w_L1EM_25GeV_1030","",40,0,200);
   TH1D *photon_w_L1EM_25GeV_3050 = new TH1D("photon_w_L1EM_25GeV_3050","",40,0,200);
   TH1D *photon_w_L1EM_25GeV_5080 = new TH1D("photon_w_L1EM_25GeV_5080","",40,0,200);
 
-  TH1D *photon_w_L1EM_35GeV_010 = new TH1D("photon_w_L1EM_35GeV_010","",40,0,200);
+  TH1D *photon_w_L1EM_35GeV_010 = new TH1D("photon_w_L1EM_35GeV_010","",25,0,40);    //-----Changed the number of bins from 40 ---> 50
   TH1D *photon_w_L1EM_35GeV_1030 = new TH1D("photon_w_L1EM_35GeV_1030","",40,0,200);
   TH1D *photon_w_L1EM_35GeV_3050 = new TH1D("photon_w_L1EM_35GeV_3050","",40,0,200);
   TH1D *photon_w_L1EM_35GeV_5080 = new TH1D("photon_w_L1EM_35GeV_5080","",40,0,200);
   
   //----Barrel
-  TH1D *all_photons_010_b = new TH1D("all_photons_010_b","",40,0,200); 
+  TH1D *all_photons_010_b = new TH1D("all_photons_010_b","",25,0,40);                   
   TH1D *all_photons_1030_b = new TH1D("all_photons_1030_b","",40,0,200);
   TH1D *all_photons_3050_b = new TH1D("all_photons_3050_b","",40,0,200);
   TH1D *all_photons_5080_b = new TH1D("all_photons_5080_b","",40,0,200);
 
-  
-  TH1D *photon_w_L1EM_15GeV_010_b = new TH1D("photon_w_L1EM_15GeV_010_b","",40,0,200);
+  TH1D *photon_w_L1EM_10GeV_010_b = new TH1D("photon_w_L1EM_10GeV_010_b","",25,0,40);
+  TH1D *photon_w_L1EM_10GeV_1030_b = new TH1D("photon_w_L1EM_10GeV_1030_b","",40,0,200);
+  TH1D *photon_w_L1EM_10GeV_3050_b = new TH1D("photon_w_L1EM_10GeV_3050_b","",40,0,200);
+  TH1D *photon_w_L1EM_10GeV_5080_b = new TH1D("photon_w_L1EM_10GeV_5080_b","",40,0,200);
+
+  TH1D *photon_w_L1EM_15GeV_010_b = new TH1D("photon_w_L1EM_15GeV_010_b","",25,0,40);
   TH1D *photon_w_L1EM_15GeV_1030_b = new TH1D("photon_w_L1EM_15GeV_1030_b","",40,0,200);
   TH1D *photon_w_L1EM_15GeV_3050_b = new TH1D("photon_w_L1EM_15GeV_3050_b","",40,0,200);
   TH1D *photon_w_L1EM_15GeV_5080_b = new TH1D("photon_w_L1EM_15GeV_5080_b","",40,0,200);
 
-  TH1D *photon_w_L1EM_25GeV_010_b = new TH1D("photon_w_L1EM_25GeV_010_b","",40,0,200);
+  TH1D *photon_w_L1EM_25GeV_010_b = new TH1D("photon_w_L1EM_25GeV_010_b","",25,0,40);
   TH1D *photon_w_L1EM_25GeV_1030_b = new TH1D("photon_w_L1EM_25GeV_1030_b","",40,0,200);
   TH1D *photon_w_L1EM_25GeV_3050_b = new TH1D("photon_w_L1EM_25GeV_3050_b","",40,0,200);
   TH1D *photon_w_L1EM_25GeV_5080_b = new TH1D("photon_w_L1EM_25GeV_5080_b","",40,0,200);
 
-  TH1D *photon_w_L1EM_35GeV_010_b = new TH1D("photon_w_L1EM_35GeV_010_b","",40,0,200);
+  TH1D *photon_w_L1EM_35GeV_010_b = new TH1D("photon_w_L1EM_35GeV_010_b","",25,0,40);
   TH1D *photon_w_L1EM_35GeV_1030_b = new TH1D("photon_w_L1EM_35GeV_1030_b","",40,0,200);
   TH1D *photon_w_L1EM_35GeV_3050_b = new TH1D("photon_w_L1EM_35GeV_3050_b","",40,0,200);
   TH1D *photon_w_L1EM_35GeV_5080_b = new TH1D("photon_w_L1EM_35GeV_5080_b","",40,0,200);
@@ -209,6 +274,10 @@ int L1EM_HLT(){
   TH1D *all_photons_3050_e = new TH1D("all_photons_3050_e","",40,0,200);
   TH1D *all_photons_5080_e = new TH1D("all_photons_5080_e","",40,0,200);
 
+  TH1D *photon_w_L1EM_10GeV_010_e = new TH1D("photon_w_L1EM_10GeV_010_e","",40,0,200);
+  TH1D *photon_w_L1EM_10GeV_1030_e = new TH1D("photon_w_L1EM_10GeV_1030_e","",40,0,200);
+  TH1D *photon_w_L1EM_10GeV_3050_e = new TH1D("photon_w_L1EM_10GeV_3050_e","",40,0,200);
+  TH1D *photon_w_L1EM_10GeV_5080_e = new TH1D("photon_w_L1EM_10GeV_5080_e","",40,0,200);
 
   TH1D *photon_w_L1EM_15GeV_010_e = new TH1D("photon_w_L1EM_15GeV_010_e","",40,0,200);
   TH1D *photon_w_L1EM_15GeV_1030_e = new TH1D("photon_w_L1EM_15GeV_1030_e","",40,0,200);
@@ -341,9 +410,9 @@ int L1EM_HLT(){
 
   TChain *t = new TChain("analysis");
 
-  t->Add("/Users/berenicegarcia/Desktop/ATLAS/Qual-Task/PbPb_Data/user.berenice.21817306._000001.ANALYSIS.root");
-  t->Add("/Users/berenicegarcia/Desktop/ATLAS/Qual-Task/PbPb_Data/user.berenice.21817306._000002.ANALYSIS.root");
-  t->Add("/Users/berenicegarcia/Desktop/ATLAS/Qual-Task/PbPb_Data/user.berenice.21817306._000003.ANALYSIS.root");
+  t->Add("/Users/berenicegarcia/Desktop/ATLAS/Qual-Task/PbPb_Data/user.berenice.21964600._000001.ANALYSIS.root");
+  t->Add("/Users/berenicegarcia/Desktop/ATLAS/Qual-Task/PbPb_Data/user.berenice.21964600._000002.ANALYSIS.root");
+  t->Add("/Users/berenicegarcia/Desktop/ATLAS/Qual-Task/PbPb_Data/user.berenice.21964600._000003.ANALYSIS.root");
 
 
   /*Branches For Data Vectors*/
@@ -468,7 +537,7 @@ int L1EM_HLT(){
   //if(HLT_noalg_eb_L1ZDC_A_C_VTE50 !=1){continue;}   //----MB Trigger
   //if(HLT_noalg_eb_L1MU4 !=1){continue;}
   
-  if(HLT_noalg_eb_L1TE50 !=1){continue;}  //---Requires there to be 10 GeV of energy trhoughout the whole Calorimeter (MB Trigger) 
+  //if(HLT_noalg_eb_L1TE50 !=1){continue;}  //---Requires there to be 50 GeV of energy trhoughout the whole Calorimeter (MB Trigger) 
   //if(HLT_noalg_L1EM10!=1){continue;}      //---Requiremment only at L1. This trigger will require to have 10 GeV L1 EM RoI and no ther requirement. 
 
 
@@ -480,6 +549,7 @@ int L1EM_HLT(){
   bool check = true;
   
   //---L1EM RoI Triggers
+  bool check_trigger_10 = false;
   bool check_trigger_15 = false;
   bool check_trigger_25 = false;
   bool check_trigger_35 = false;
@@ -496,7 +566,7 @@ int L1EM_HLT(){
     
     if(photon_tight->at(iPhoton) != 1){continue;}            //------Tight Photons                                                                           
     //if(photon_loose->at(iPhoton) != 1){continue;}             //-------Loose Photons
-    if(photon_pt->at(iPhoton) < 15){continue;}               //--------Photong > 20 GeV                                                                                                                                                            
+    if(photon_pt->at(iPhoton) < 5){continue;}               //--------Offline Photon pT > 5 GeV                                                                                                                                                            
     
     
     //---Endcaps
@@ -585,7 +655,9 @@ int L1EM_HLT(){
     
       //cout << "This is L1 info: pt / eta / phi: " << L1RO_pt->at(iTrig) << " / " << L1RO_eta->at(iTrig) << " / " << L1RO_phi->at(iTrig) << endl;                                                                                                                                            
       
-     
+      if((L1RO_pt->at(iTrig) > 10) && (deltaR < 0.15)){
+        check_trigger_10 = true;
+      }
       if((L1RO_pt->at(iTrig) > 15) && (deltaR < 0.15)){
         check_trigger_15 = true; //---This Photon Matched W/ the L1EMX Trigger Fired
       }
@@ -655,6 +727,58 @@ int L1EM_HLT(){
 
 
   //-------Photon Matched W/ L1EM RoI Trigger  
+    if(check_trigger_10){
+      if(((req_4 && req_5) || (req_6 && req_7) || (req_8 && req_9)) == 1){
+        photons_wL1EM_10GeV->Fill(photon_pt->at(iPhoton));
+
+        if(SumEt_data_total > 2989.31){                                           //---0-10% Centrality
+            photon_w_L1EM_10GeV_010->Fill(photon_pt->at(iPhoton));
+          }else if((SumEt_data_total < 2989.31) && (SumEt_data_total > 1368.75)){ //-----10-30% Centrality
+            photon_w_L1EM_10GeV_1030->Fill(photon_pt->at(iPhoton));
+          }else if((SumEt_data_total < 1368.75) && (SumEt_data_total > 525.092)){//-----30-50% Centrality
+            photon_w_L1EM_10GeV_3050->Fill(photon_pt->at(iPhoton));
+          }else if((SumEt_data_total < 525.092) && (SumEt_data_total > 63.719)){//-----50-80% CEntrality
+            photon_w_L1EM_10GeV_5080->Fill(photon_pt->at(iPhoton));
+          }
+        }//---Barrel && Endcaps
+      
+      if((req_8 && req_9) == 1){
+        photons_wL1EM_10GeV_barrel->Fill(photon_pt->at(iPhoton));
+        //if(HLT_noalg_eb_L1TE50 ==1){barrel_wL1EM_10GeV_SumET_dis_50->Fill(SumEt_data_total);}
+        //if(HLT_noalg_L1EM10 ==1){barrel_wL1EM_10GeV_SumET_dis_10->Fill(SumEt_data_total);}
+
+        if(SumEt_data_total > 2989.31){                                           //---0-10% Centrality
+          photon_w_L1EM_10GeV_010_b->Fill(photon_pt->at(iPhoton));
+        }else if((SumEt_data_total < 2989.31) && (SumEt_data_total > 1368.75)){ //-----10-30% Centrality
+          photon_w_L1EM_10GeV_1030_b->Fill(photon_pt->at(iPhoton));
+        }else if((SumEt_data_total < 1368.75) && (SumEt_data_total > 525.092)){//-----30-50% Centrality
+          photon_w_L1EM_10GeV_3050_b->Fill(photon_pt->at(iPhoton));
+        }else if((SumEt_data_total < 525.092) && (SumEt_data_total > 63.719)){//-----50-80% CEntrality
+          photon_w_L1EM_10GeV_5080_b->Fill(photon_pt->at(iPhoton));
+        }
+      }//---Photons Went Through Barrel
+
+      if ( ((req_4 && req_5) || (state_6 && state_7)) == 1 ){
+        photons_wL1EM_10GeV_endcaps->Fill(photon_pt->at(iPhoton));
+        //if(HLT_noalg_eb_L1TE50 ==1){endcaps_wL1EM_10GeV_SumET_dis_50->Fill(SumEt_data_total);}
+        //if(HLT_noalg_L1EM10 ==1){endcaps_wL1EM_10GeV_SumET_dis_10->Fill(SumEt_data_total);}
+
+        if(SumEt_data_total > 2989.31){                                           //---0-10% Centrality
+          photon_w_L1EM_10GeV_010_e->Fill(photon_pt->at(iPhoton));
+        }else if((SumEt_data_total < 2989.31) && (SumEt_data_total > 1368.75)){ //-----10-30% Centrality
+          photon_w_L1EM_10GeV_1030_e->Fill(photon_pt->at(iPhoton));
+        }else if((SumEt_data_total < 1368.75) && (SumEt_data_total > 525.092)){//-----30-50% Centrality
+          photon_w_L1EM_10GeV_3050_e->Fill(photon_pt->at(iPhoton));
+        }else if((SumEt_data_total < 525.092) && (SumEt_data_total > 63.719)){//-----50-80% CEntrality
+          photon_w_L1EM_10GeV_5080_e->Fill(photon_pt->at(iPhoton));
+        }
+
+      }//------Photons went through the endcaps ONLY
+
+      check_trigger_10 = false;
+    }
+
+
     if(check_trigger_15){
     
     if ( ((req_4 && req_5) || (req_6 && req_7) || (req_8 && req_9)) == 1 ) {
@@ -912,7 +1036,7 @@ int L1EM_HLT(){
     } //--Encaps && Barrel
     if((req_8 && req_9) == 1){
       photons_w_HLT_35_barrel->Fill(photon_pt->at(iPhoton));
-      if(SumEt_data_total < 2989.31){                                           //---0-10% Centrality
+      if(SumEt_data_total > 2989.31){                                           //---0-10% Centrality
         photon_w_HLT_35GeV_010_b->Fill(photon_pt->at(iPhoton));
       }else if((SumEt_data_total < 2989.31) && (SumEt_data_total > 1368.75)){ //-----10-30% Centrality
         photon_w_HLT_35GeV_1030_b->Fill(photon_pt->at(iPhoton));
@@ -924,7 +1048,7 @@ int L1EM_HLT(){
     }                 //-----Photons that ONLY went through the barrel
     if ( ((req_4 && req_5) || (state_6 && state_7)) == 1 ) {
       photons_w_HLT_35_endcaps->Fill(photon_pt->at(iPhoton));
-      if(SumEt_data_total < 2989.31){                                           //---0-10% Centrality
+      if(SumEt_data_total > 2989.31){                                           //---0-10% Centrality
         photon_w_HLT_35GeV_010_e->Fill(photon_pt->at(iPhoton));
       }else if((SumEt_data_total < 2989.31) && (SumEt_data_total > 1368.75)){ //-----10-30% Centrality
         photon_w_HLT_35GeV_1030_e->Fill(photon_pt->at(iPhoton));
@@ -994,24 +1118,35 @@ file_root->cd();
 //----------ALl Offline Photons----------//
 //---------------------------------------//
 all_photons->Write("all_photons",TObject::kOverwrite);
-all_photons_barrel->Write("all_photons_endcaps",TObject::kOverwrite);
-all_photons_endcaps->Write("all_photons_barrel",TObject::kOverwrite);
+all_photons_barrel->Write("all_photons_barrel",TObject::kOverwrite);
+all_photons_endcaps->Write("all_photons_endcaps",TObject::kOverwrite);
 
+
+//-----SumET Distributions
+barrel_wL1EM_10GeV_SumET_dis_10->Write("barrel_wL1EM_10GeV_SumET_dis_10",TObject::kOverwrite);
+barrel_wL1EM_10GeV_SumET_dis_50->Write("barrel_wL1EM_10GeV_SumET_dis_50",TObject::kOverwrite);
+
+endcaps_wL1EM_10GeV_SumET_dis_10->Write("endcaps_wL1EM_10GeV_SumET_dis_10", TObject::kOverwrite);
+endcaps_wL1EM_10GeV_SumET_dis_50->Write("endcaps_wL1EM_10GeV_SumET_dis_50", TObject::kOverwrite);
 
 //---------------------------------------//
 //--------L1EM RoI pT Distributions------//
 //---------------------------------------//
+photons_wL1EM_10GeV_barrel->Write("photons_wL1EM_10GeV_barrel",TObject::kOverwrite);
+photons_wL1EM_10GeV_endcaps->Write("photons_wL1EM_10GeV_endcaps",TObject::kOverwrite);
+
 photons_wL1EM_15GeV->Write("photons_wL1EM_15GeV",TObject::kOverwrite);
 photons_wL1EM_15GeV_barrel->Write("photons_wL1EM_15GeV_barrel", TObject::kOverwrite);
 photons_wL1EM_15GeV_endcaps->Write("photons_wL1EM_15GeV_endcaps",TObject::kOverwrite);
 
 photons_wL1EM_25GeV->Write("photons_wL1EM_25GeV",TObject::kOverwrite);
-photons_wL1EM_25GeV_barrel->Write("photons_wL1EM_15GeV_barrel",TObject::kOverwrite);
+photons_wL1EM_25GeV_barrel->Write("photons_wL1EM_25GeV_barrel",TObject::kOverwrite);
 photons_wL1EM_25GeV_endcaps->Write("photons_wL1EM_25GeV_endcaps", TObject::kOverwrite);
 
 photons_wL1EM_35GeV->Write("photons_wL1EM_35GeV", TObject::kOverwrite);
 photons_wL1EM_35GeV_barrel->Write("photons_wL1EM_35GeV_barrel", TObject::kOverwrite);
 photons_wL1EM_35GeV_endcaps->Write("photons_wL1EM_35GeV_endcaps", TObject::kOverwrite);
+
 
 //--------------------------------------//
 //--------HLT pT Distribution-----------//
@@ -1049,6 +1184,10 @@ all_photons_1030->Write("all_photons_1030", TObject::kOverwrite);
 all_photons_3050->Write("all_photons_3050", TObject::kOverwrite);
 all_photons_5080->Write("all_photons_5080", TObject::kOverwrite);
 
+photon_w_L1EM_10GeV_010->Write("photon_w_L1EM_10GeV_010", TObject::kOverwrite);
+photon_w_L1EM_10GeV_1030->Write("photon_w_L1EM_10GeV_1030", TObject::kOverwrite);
+photon_w_L1EM_10GeV_3050->Write("photon_w_L1EM_10GeV_3050", TObject::kOverwrite);
+photon_w_L1EM_10GeV_5080->Write("photon_w_L1EM_10GeV_5080", TObject::kOverwrite);
 
 photon_w_L1EM_15GeV_010->Write("photon_w_L1EM_15GeV_010", TObject::kOverwrite);
 photon_w_L1EM_15GeV_1030->Write("photon_w_L1EM_15GeV_1030", TObject::kOverwrite);
@@ -1070,6 +1209,13 @@ all_photons_010_b->Write("all_photons_010_b", TObject::kOverwrite);
 all_photons_1030_b->Write("all_photons_1030_b", TObject::kOverwrite);
 all_photons_3050_b->Write("all_photons_3050_b", TObject::kOverwrite);
 all_photons_5080_b->Write("all_photons_5080_b", TObject::kOverwrite);
+
+
+
+photon_w_L1EM_10GeV_010_b->Write("photon_w_L1EM_10GeV_010_b", TObject::kOverwrite);
+photon_w_L1EM_10GeV_1030_b->Write("photon_w_L1EM_10GeV_1030_b", TObject::kOverwrite);
+photon_w_L1EM_10GeV_3050_b->Write("photon_w_L1EM_10GeV_3050_b",TObject::kOverwrite);
+photon_w_L1EM_10GeV_5080_b->Write("photon_w_L1EM_10GeV_5080_b", TObject::kOverwrite);
 
 
 photon_w_L1EM_15GeV_010_b->Write("photon_w_L1EM_15GeV_010_b", TObject::kOverwrite);
@@ -1094,6 +1240,11 @@ all_photons_1030_e->Write("all_photons_1030_e", TObject::kOverwrite);
 all_photons_3050_e->Write("all_photons_3050_e", TObject::kOverwrite);
 all_photons_5080_e->Write("all_photons_5080_e", TObject::kOverwrite);
 
+
+photon_w_L1EM_10GeV_010_e->Write("photon_w_L1EM_10GeV_010_e", TObject::kOverwrite); 
+photon_w_L1EM_10GeV_1030_e->Write("photon_w_L1EM_10GeV_1030_e", TObject::kOverwrite); 
+photon_w_L1EM_10GeV_3050_e->Write("photon_w_L1EM_10GeV_3050_e", TObject::kOverwrite); 
+photon_w_L1EM_10GeV_5080_e->Write("photon_w_L1EM_10GeV_5080_e", TObject::kOverwrite); 
 
 photon_w_L1EM_15GeV_010_e->Write("photon_w_L1EM_15GeV_010_e", TObject::kOverwrite); 
 photon_w_L1EM_15GeV_1030_e->Write("photon_w_L1EM_15GeV_1030_e", TObject::kOverwrite); 
